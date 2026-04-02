@@ -1,0 +1,63 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id            String     @id @default(auto()) @map("_id") @db.ObjectId
+  nome          String
+  email         String     @unique
+  senha         String
+  dataCriacao   DateTime   @default(now())
+  dataAlteracao DateTime   @updatedAt
+  tarefas       Tarefa[]
+  categorias    Categoria[]
+
+  @@map("usuarios")
+}
+
+model Categoria {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  nome          String
+  usuarioId     String   @db.ObjectId
+  dataCriacao   DateTime @default(now())
+  dataAlteracao DateTime @updatedAt
+  usuario       Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  tarefas       Tarefa[]
+
+  @@unique([nome, usuarioId])
+  @@map("categorias")
+}
+
+model Tarefa {
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  titulo        String
+  descricao     String?
+  status        StatusTarefa @default(pendente)
+  dataLimite    DateTime?
+  categoriaId   String?      @db.ObjectId
+  usuarioId     String       @db.ObjectId
+  dataCriacao   DateTime     @default(now())
+  dataAlteracao DateTime     @updatedAt
+  usuario       Usuario      @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  categoria     Categoria?   @relation(fields: [categoriaId], references: [id], onDelete: SetNull)
+
+  @@map("tarefas")
+}
+
+enum StatusTarefa {
+  pendente
+  em_andamento
+  concluida
+}
