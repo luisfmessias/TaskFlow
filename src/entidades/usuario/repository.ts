@@ -1,34 +1,43 @@
-import { Usuario } from "../../../generated/prisma/browser.js";
-import { PrismaClient } from "@prisma/client/default.js";
+import { ErroNaoEncontrado } from "@root/erros/erroNaoEncontrado.js";
+import prisma from '@root/lib/prisma.js'
 
 export interface IUsuarioRepository {
-    salvar(usuario: Usuario): Promise<Usuario>
-    atualizar(id: string, usuario: Usuario): Promise<Usuario>
+    salvar(dados: { nome: string; email: string; senha: string }): Promise<any>
+    atualizar(id: string, dados: { nome?: string; email?: string; senha?: string }): Promise<any>
     deletar(id: string): Promise<void>
-    buscarPorId(id: string): Promise<Usuario | null>
-    buscarTodos(): Promise<Usuario[]>
+    buscarPorId(id: string): Promise<any>
+    buscarPorEmail(email: string): Promise<any>
+    buscarTodos(): Promise<any[]>
 }
 
-async function criarRepositorioUsuario(): Promise<IUsuarioRepository> {
-    const prisma = new PrismaClient();
-
-    return {
-        async salvar(usuario: Usuario): Promise<Usuario> {
-            return prisma.usuario.create({ data: usuario });
-        },
-        async atualizar(id: string, usuario: Usuario): Promise<Usuario> {
-            return prisma.usuario.update({ where: { id }, data: usuario });
-        },
-        async deletar(id: string): Promise<void> {
-            await prisma.usuario.delete({ where: { id } });
-        },
-        async buscarPorId(id: string): Promise<Usuario | null> {
-            return prisma.usuario.findUnique({ where: { id } });
-        },
-        async buscarTodos(): Promise<Usuario[]> {
-            return prisma.usuario.findMany();
+export const UsuarioRepository: IUsuarioRepository = {
+    async salvar(dados) {
+        return prisma.usuario.create({ data: dados })
+    },
+    async atualizar(id, dados) {
+        const usuario = await prisma.usuario.findUnique({ where: { id } })
+        if (!usuario) {
+            throw new ErroNaoEncontrado('Usuario não encontrado')
         }
-    };
+        return prisma.usuario.update({ where: { id }, data: dados })
+    },
+    async deletar(id) {
+        const usuario = await prisma.usuario.findUnique({ where: { id } })
+        if (!usuario) {
+            throw new ErroNaoEncontrado('Usuario não encontrado')
+        }
+        await prisma.usuario.delete({ where: { id } })
+    },
+    async buscarPorId(id) {
+        return prisma.usuario.findUnique({ where: { id } })
+    },
+
+    async buscarPorEmail(email) {
+        return prisma.usuario.findUnique({ where: { email } })
+    },
+    
+    async buscarTodos() {
+        return prisma.usuario.findMany()
+    }
 }
 
-export const UsuarioRepository = criarRepositorioUsuario();

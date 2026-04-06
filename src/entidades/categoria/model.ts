@@ -3,7 +3,7 @@ import { ErroValidacao } from "@root/erros/erroValidacao.js";
 export class Categorias {
     id?: string
     nome?: string
-    usuarioId?: number
+    usuarioId?: string
     dataCriacao?: Date
     dataAlteracao?: Date
 
@@ -15,7 +15,7 @@ export class Categorias {
         }
 
         if (erros.length > 0) {
-            return new ErroValidacao(`Erros encontrados: ${erros.join('\n')}`)
+            throw new ErroValidacao(`Erros encontrados: ${erros.join('\n')}`)
         }
     }
 }
