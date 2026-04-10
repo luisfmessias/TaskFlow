@@ -1,13 +1,14 @@
+import { Usuario } from "@prisma/client";
 import { ErroNaoEncontrado } from "@root/erros/erroNaoEncontrado.js";
 import prisma from '@root/lib/prisma.js'
 
 export interface IUsuarioRepository {
-    salvar(dados: { nome: string; email: string; senha: string }): Promise<any>
-    atualizar(id: string, dados: { nome?: string; email?: string; senha?: string }): Promise<any>
+    salvar(dados: { nome: string; email: string; senha: string }): Promise<Usuario | null>
+    atualizar(id: string, dados: { nome?: string; email?: string; senha?: string }): Promise<Usuario | null>
     deletar(id: string): Promise<void>
-    buscarPorId(id: string): Promise<any>
-    buscarPorEmail(email: string): Promise<any>
-    buscarTodos(): Promise<any[]>
+    buscarPorId(id: string): Promise<Usuario | null>
+    buscarPorEmail(email: string): Promise<Usuario | null>
+    buscarTodos(): Promise<Usuario[]>
 }
 
 export const UsuarioRepository: IUsuarioRepository = {

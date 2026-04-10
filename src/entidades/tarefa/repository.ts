@@ -1,12 +1,13 @@
+import { Tarefa } from "../../../generated/prisma/wasm.js";
 import { ErroNaoEncontrado } from "@root/erros/erroNaoEncontrado.js";
 import prisma from '@root/lib/prisma.js'
 
 export interface ITarefaRepository {
-    salvar(dados: { titulo: string; descricao?: string; status?: string; dataLimite?: Date; categoriaId?: string; usuarioId: string }): Promise<any>
-    atualizar(id: string, dados: { titulo?: string; descricao?: string; status?: string; dataLimite?: Date; categoriaId?: string }): Promise<any>
+    salvar(dados: { titulo: string; descricao?: string; status?: string; dataLimite?: Date; categoriaId?: string; usuarioId: string }): Promise<Tarefa | null>
+    atualizar(id: string, dados: { titulo?: string; descricao?: string; status?: string; dataLimite?: Date; categoriaId?: string }): Promise<Tarefa | null>
     deletar(id: string): Promise<void>
-    buscarPorId(id: string): Promise<any | null>
-    buscarTodos(usuarioId: string, filtros?: { status?: string; categoriaId?: string }): Promise<any[]>
+    buscarPorId(id: string): Promise<Tarefa | null>
+    buscarTodos(usuarioId: string, filtros?: { status?: string; categoriaId?: string }): Promise<Tarefa[]>
 }
 
 export const TarefaRepository: ITarefaRepository = {

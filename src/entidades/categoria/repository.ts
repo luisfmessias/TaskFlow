@@ -1,12 +1,13 @@
+import { Categoria } from "@prisma/client";
 import { ErroNaoEncontrado } from "@root/erros/erroNaoEncontrado.js";
 import prisma from '@root/lib/prisma.js'
 
 export interface ICategoriaRepository {
-    salvar(dados: { nome: string; usuarioId: string }): Promise<any>
-    atualizar(id: string, dados: { nome?: string }): Promise<any>
+    salvar(dados: { nome: string; usuarioId: string }): Promise<Categoria | null>
+    atualizar(id: string, dados: { nome?: string }): Promise<Categoria | null>
     deletar(id: string): Promise<void>
-    buscarPorId(id: string): Promise<any>
-    buscarTodos(usuarioId: string): Promise<any[]>
+    buscarPorId(id: string): Promise<Categoria | null>
+    buscarTodos(usuarioId: string): Promise<Categoria[]>
 }
 
 
